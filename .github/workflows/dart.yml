@@ -25,19 +25,11 @@ jobs:
 
       - run: flutter build apk --release --split-per-abi
 
-      - name: Extract APK Files
-        run: |
-          mkdir -p extracted-apk
-          cp build/app/outputs/apk/release/*.apk extracted-apk/
-
-      - name: Verify APK
-        run: ls -l extracted-apk/
-
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: apk-release
-          path: extracted-apk/
+          path: build/app/outputs/apk/release/*.apk
 
   build-ios:
     name: 🎉 iOS Build
@@ -68,19 +60,11 @@ jobs:
       - run: zip -qq -r -9 hocFlutter.ipa Payload
         working-directory: build/ios/iphoneos
 
-      - name: Extract IPA File
-        run: |
-          mkdir -p extracted-ipa
-          mv build/ios/iphoneos/hocFlutter.ipa extracted-ipa/
-
-      - name: Verify IPA
-        run: ls -l extracted-ipa/
-
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ipa-release
-          path: extracted-ipa/
+          path: build/ios/iphoneos/hocFlutter.ipa
 
   release:
     name: 🎉 Publish Release
@@ -97,24 +81,12 @@ jobs:
         with:
           name: ipa-release
 
-      - name: Extract APK Artifact
-        run: |
-          mkdir -p final-apk
-          unzip apk-release.zip -d final-apk
-          ls -l final-apk/
-
-      - name: Extract IPA Artifact
-        run: |
-          mkdir -p final-ipa
-          unzip ipa-release.zip -d final-ipa
-          ls -l final-ipa/
-
       - name: Publish to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            final-apk/*.apk
-            final-ipa/*.ipa
+            apk-release/*.apk
+            ipa-release/*.ipa
           tag: v1.0
           token: ${{ secrets.TOKEN }}
           body: "Học Flutter Cùng Tuancute"

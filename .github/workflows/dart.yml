@@ -97,12 +97,24 @@ jobs:
         with:
           name: ipa-release
 
+      - name: Extract APK Artifact
+        run: |
+          mkdir -p final-apk
+          unzip apk-release.zip -d final-apk
+          ls -l final-apk/
+
+      - name: Extract IPA Artifact
+        run: |
+          mkdir -p final-ipa
+          unzip ipa-release.zip -d final-ipa
+          ls -l final-ipa/
+
       - name: Publish to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            apk-release/*.apk
-            ipa-release/*.ipa
+            final-apk/*.apk
+            final-ipa/*.ipa
           tag: v1.0
           token: ${{ secrets.TOKEN }}
           body: "Học Flutter Cùng Tuancute"
